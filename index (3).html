@@ -1,0 +1,249 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P3iD Trust Triangle Interactive Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Open Sans', sans-serif; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; }
+        .slide { display: none; }
+        .slide.active { display: block; }
+        .thumbnail:hover { transform: scale(1.1); }
+        .progress-bar { transition: width 0.3s ease; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-4">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-900">P3iD Trust Triangle Explainer</h1>
+            <p class="text-lg text-gray-600">Authentic, Verified, Immutable</p>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-300 rounded-full h-2 mb-4">
+            <div id="progressBar" class="bg-green-600 h-2 rounded-full" style="width: 0%"></div>
+        </div>
+
+        <!-- Slide Container -->
+        <div id="slideContainer" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <!-- Slide 1 -->
+            <div class="slide active" data-index="0">
+                <img src="https://imgur.com/eVyngeA.png" alt="Scene 1: Problem Statement" class="w-full h-64 object-cover rounded mb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Opening - Problem Statement</h2>
+                <p class="text-gray-700 mb-4">In a world where digital documents are constantly under threat, how can you truly trust what you see? Every day, businesses face immense risks from fraud, tampering, and compliance breaches. Especially in regulated industries like finance, healthcare, and government, document security and authenticity aren't just important – they're absolutely critical.</p>
+                <p class="text-blue-600 font-semibold">On-Screen: Can You Trust Your Digital Documents?</p>
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">AI Summary</h3>
+                    <p id="summary-0" class="text-gray-600">Digital documents face risks of fraud and tampering, critical in regulated industries.</p>
+                </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="slide" data-index="1">
+                <img src="https://imgur.com/YqTo6YW.png" alt="Scene 2: Trust Triangle" class="w-full h-64 object-cover rounded mb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Introducing the Trust Triangle</h2>
+                <p class="text-gray-700 mb-4">At P3iD Technologies, we believe in unshakeable trust. That's why we developed the revolutionary <strong>P3iD Trust Triangle</strong> framework. It's built on three essential, interconnected pillars that work together to provide complete document trust: <strong>Authentic, Verified, and Immutable.</strong></p>
+                <p class="text-blue-600 font-semibold">On-Screen: P3iD Trust Triangle: Authentic, Verified, Immutable</p>
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">AI Summary</h3>
+                    <p id="summary-1" class="text-gray-600">P3iD's Trust Triangle ensures document trust with Authentic, Verified, Immutable pillars.</p>
+                </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="slide" data-index="2">
+                <img src="https://imgur.com/QyYI4V6.png" alt="Scene 3: Authentic" class="w-full h-64 object-cover rounded mb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Pillar 1 - Authentic</h2>
+                <p class="text-gray-700 mb-4">First, <strong>Authentic</strong>. Imagine giving every document a digital birth certificate. Using cutting-edge C2PA technology, we embed verifiable metadata directly into your documents at the moment of creation. This isn't just a timestamp; it's a digital fingerprint that proves its origin and prevents tampering. What you see is genuinely what was created – no doubts, no fakes.</p>
+                <p class="text-blue-600 font-semibold">On-Screen: AUTHENTIC: Proves Origin, Prevents Tampering</p>
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">AI Summary</h3>
+                    <p id="summary-2" class="text-gray-600">C2PA technology embeds metadata for a tamper-proof digital fingerprint.</p>
+                </div>
+            </div>
+            <!-- Slide 4 -->
+            <div class="slide" data-index="3">
+                <img src="https://imgur.com/s0XE5JY.png" alt="Scene 4: Verified" class="w-full h-64 object-cover rounded mb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Pillar 2 - Verified</h2>
+                <p class="text-gray-700 mb-4">Next, <strong>Verified</strong>. Access to sensitive information demands robust security. Our iVALT Multi-Factor Authentication system provides unparalleled protection with up to 25 authentication points. From advanced biometrics to secure device identification, iVALT ensures that only authorized users can access your critical documents. This significantly enhances your security posture and simplifies compliance.</p>
+                <p class="text-blue-600 font-semibold">On-Screen: VERIFIED: Authorized Access, Enhanced Security</p>
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">AI Summary</h3>
+                    <p id="summary-3" class="text-gray-600">iVALT MFA with 25 points ensures secure, authorized document access.</p>
+                </div>
+            </div>
+            <!-- Slide 5 -->
+            <div class="slide" data-index="4">
+                <img src="https://imgur.com/jcJe3OK.png" alt="Scene 5: Immutable" class="w-full h-64 object-cover rounded mb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Pillar 3 - Immutable</h2>
+                <p class="text-gray-700 mb-4">And finally, <strong>Immutable</strong>. With Barlea blockchain technology, we create tamper-proof audit trails for every single action taken on a document. Think of it as an unbreakable chain of evidence. Every view, every edit, every share is recorded on a distributed ledger that cannot be altered. This provides unalterable records crucial for compliance, dispute resolution, and absolute accountability.</p>
+                <p class="text-blue-600 font-semibold">On-Screen: IMMUTABLE: Tamper-Proof Audit Trails, Unalterable Records</p>
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">AI Summary</h3>
+                    <p id="summary-4" class="text-gray-600">Barlea blockchain records unalterable document actions for compliance.</p>
+                </div>
+            </div>
+            <!-- Slide 6 -->
+            <div class="slide" data-index="5">
+                <img src="https://imgur.com/kkQL3rb.png" alt="Scene 6: Holistic Approach" class="w-full h-64 object-cover rounded mb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Holistic Approach & Benefits</h2>
+                <p class="text-gray-700 mb-4">Unlike fragmented point solutions that only address a piece of the trust puzzle, P3iD's Trust Triangle delivers a truly holistic approach. By seamlessly integrating Authentic, Verified, and Immutable, we provide a comprehensive solution that empowers organizations like yours to significantly reduce fraud losses, streamline compliance with critical regulations like GDPR and HIPAA, and build stronger, undeniable trust with clients and regulators alike.</p>
+                <p class="text-blue-600 font-semibold">On-Screen: Comprehensive Solution: Reduce Fraud, Streamline Compliance, Build Trust</p>
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">AI Summary</h3>
+                    <p id="summary-5" class="text-gray-600">Holistic Trust Triangle reduces fraud, ensures compliance, and builds trust.</p>
+                </div>
+            </div>
+            <!-- Slide 7 -->
+            <div class="slide" data-index="6">
+                <img src="https://imgur.com/Mrbiy2n.png" alt="Scene 7: Call to Action" class="w-full h-64 object-cover rounded mb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Call to Action</h2>
+                <p class="text-gray-700 mb-4">Experience the unparalleled power of Authentic, Verified, Immutable document trust. Ready to secure your documents and build unshakeable trust? Visit <a href="https://p3idtrust.com" target="_blank" class="text-blue-600 underline">p3idtrust.com</a> today to learn more and schedule a personalized demonstration. Transform your document security with P3iD!</p>
+                <p class="text-blue-600 font-semibold">On-Screen: Visit p3idtrust.com | Learn More & Schedule a Demo</p>
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800">AI Summary</h3>
+                    <p id="summary-6" class="text-gray-600">Visit p3idtrust.com for a demo to secure documents with P3iD.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between mb-8">
+            <button id="prevBtn" class="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-400" disabled>Previous</button>
+            <button id="nextBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+        </div>
+
+        <!-- Thumbnails -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <img src="https://imgur.com/eVyngeA.png" alt="Scene 1 Thumbnail" class="thumbnail w-full h-24 object-cover rounded cursor-pointer" data-index="0">
+            <img src="https://imgur.com/YqTo6YW.png" alt="Scene 2 Thumbnail" class="thumbnail w-full h-24 object-cover rounded cursor-pointer" data-index="1">
+            <img src="https://imgur.com/QyYI4V6.png" alt="Scene 3 Thumbnail" class="thumbnail w-full h-24 object-cover rounded cursor-pointer" data-index="2">
+            <img src="https://imgur.com/s0XE5JY.png" alt="Scene 4 Thumbnail" class="thumbnail w-full h-24 object-cover rounded cursor-pointer" data-index="3">
+            <img src="https://imgur.com/jcJe3OK.png" alt="Scene 5 Thumbnail" class="thumbnail w-full h-24 object-cover rounded cursor-pointer" data-index="4">
+            <img src="https://imgur.com/kkQL3rb.png" alt="Scene 6 Thumbnail" class="thumbnail w-full h-24 object-cover rounded cursor-pointer" data-index="5">
+            <img src="https://imgur.com/Mrbiy2n.png" alt="Scene 7 Thumbnail" class="thumbnail w-full h-24 object-cover rounded cursor-pointer" data-index="6">
+        </div>
+
+        <!-- AI Q&A Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-blue-700 mb-4">Ask About the Trust Triangle</h2>
+            <input id="qaInput" type="text" placeholder="e.g., What is C2PA technology?" class="w-full p-2 border rounded mb-4">
+            <button id="qaSubmit" class="bg-green-600 text-white px-4 py-2 rounded">Ask</button>
+            <div id="qaResponse" class="mt-4 text-gray-700"></div>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progressBar');
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const qaInput = document.getElementById('qaInput');
+        const qaSubmit = document.getElementById('qaSubmit');
+        const qaResponse = document.getElementById('qaResponse');
+
+        let currentSlide = 0;
+
+        function updateSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            currentSlide = index;
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) updateSlide(currentSlide - 1);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) updateSlide(currentSlide + 1);
+        });
+
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', () => {
+                updateSlide(parseInt(thumbnail.dataset.index));
+            });
+        });
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentSlide > 0) updateSlide(currentSlide - 1);
+            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) updateSlide(currentSlide + 1);
+        });
+
+        // Simulated AI Q&A
+        const qaDatabase = [
+            {
+                question: /c2pa technology/i,
+                answer: 'C2PA technology embeds verifiable metadata into documents at creation, acting as a digital fingerprint to prove origin and prevent tampering.'
+            },
+            {
+                question: /ivalt authentication/i,
+                answer: 'iVALT Multi-Factor Authentication uses up to 25 points, including biometrics and device ID, to ensure only authorized users access documents.'
+            },
+            {
+                question: /barlea blockchain/i,
+                answer: 'Barlea blockchain creates tamper-proof audit trails, recording every document action on an unalterable distributed ledger for compliance and accountability.'
+            },
+            {
+                question: /trust triangle/i,
+                answer: 'The P3iD Trust Triangle is a framework with three pillars—Authentic, Verified, Immutable—ensuring comprehensive document trust.'
+            },
+            {
+                question: /.*/i,
+                answer: 'Can you clarify your question? I can explain C2PA, iVALT, Barlea, or the Trust Triangle in detail!'
+            }
+        ];
+
+        qaSubmit.addEventListener('click', () => {
+            const query = qaInput.value.trim();
+            const response = qaDatabase.find(item => item.question.test(query))?.answer || 'Sorry, I didn’t understand. Try asking about C2PA, iVALT, or the Trust Triangle!';
+            qaResponse.textContent = response;
+            qaInput.value = '';
+        });
+    </script>
+</body>
+</html>
